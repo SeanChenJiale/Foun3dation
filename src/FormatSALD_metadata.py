@@ -1,18 +1,22 @@
 import glob
 import pandas as pd
-
+import os
 ### instructions place into ./Metadata/sub_information_SALD.xlsx
 ### preprocessed images should be in ./PreProcessedData/SALD/<all SALD_nii.gz files here>
 print('SALD csv formatter')
 
-SALD = glob.glob('./PreProcessedData/SALD/*.nii.gz') ## change to the file of the pre-processed images
+file = os.path.dirname(os.path.abspath(__file__))
+os.chdir(file)
+print(os.getcwd())
+
+SALD = glob.glob('../PreProcessedData/SALD/*.nii.gz') ## change to the file of the pre-processed images
 for name in SALD:
     print(name)
     
 # Replace backslashes with forward slashes
 SALD = [path.replace("\\", "/") for path in SALD]
 
-df = pd.read_excel("Metadata/sub_information_SALD.xlsx") ### metadatafolder here
+df = pd.read_excel("../Metadata/sub_information_SALD.xlsx") ### metadatafolder here
 
 # Convert to formatted IXI IDs #not needed 
 df['Formatted_Sub_ID'] = df['Sub_ID'].apply(lambda x: f'sub-{x:06}')
@@ -23,5 +27,5 @@ df['filepath'] = df['Formatted_Sub_ID'].apply(
 )
 df = df[['Age', 'filepath']].dropna()
 
-df.to_csv("./Metadata/SALD_cleaned.csv",index=False)
+df.to_csv("../Metadata/SALD_cleaned.csv",index=False)
 

@@ -1,26 +1,28 @@
 #%%
+
 # bias field test
 
 import SimpleITK as sitk
 import glob
 import pandas as pd
+import os 
 
-print('\nNamed with wildcard *:')
+file = os.path.dirname(os.path.abspath(__file__))
+os.chdir(file)
+print(os.getcwd())
 
+IXI = glob.glob('../Dataset/IXI/**/*.nii.gz', recursive=True)
 
-SALD = glob.glob('./Dataset/SALD/**/*/*.nii.gz')
-
-fixed_image = sitk.ReadImage("./Dataset/MNI/MNI152_T1_1mm.nii.gz")  # MNI template
+fixed_image = sitk.ReadImage("../Dataset/MNI/MNI152_T1_1mm.nii.gz")  # MNI template
 #%%
 
 for name in IXI:
-    
+    print("Starting preprocessing")
     # Load the NIfTI image
     input_image = sitk.ReadImage(name)
 
     # Convert to a float type for better correctionko
     input_image = sitk.Cast(input_image, sitk.sitkFloat32)
-
     # Apply N4 Bias Field Correction
     bias_corrector = sitk.N4BiasFieldCorrectionImageFilter()
     corrected_image = bias_corrector.Execute(input_image)
@@ -98,8 +100,8 @@ for name in IXI:
 
 
     # Save the registered image
-    sitk.WriteImage(moving_resampled,  "./PreProcessedData/IXI_input/" + name.split('/')[-1])
-
+    sitk.WriteImage(moving_resampled,  "../PreProcessedData/IXI_input/" + name.split('/')[-1])
+    sitk.WriteTransform(final_transform, "../PreProcessedData/IXI_mask/" + os.path.splitext(name.split('/')[-1])[0] + ".tfm")
     print("Rigid registration to MNI152 completed!")
 
 # # HD-Bet
