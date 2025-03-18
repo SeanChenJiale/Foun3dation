@@ -99,17 +99,12 @@ for name in IXI:
     moving_resampled = sitk.Resample(moving_image, fixed_image_cast, final_transform, sitk.sitkLinear, 0.0, moving_image.GetPixelID())
 
     # Save the registered image
-<<<<<<< HEAD:src/final_ixi_code.py
-    sitk.WriteImage(moving_resampled,  "../PreProcessedData/IXI_input/" + name.split('/')[-1])
-    sitk.WriteTransform(final_transform, "../PreProcessedData/IXI_mask/" + os.path.splitext(name.split('/')[-1])[0] + ".tfm")
-=======
     sitk.WriteImage(moving_resampled,  "../PreProcessedData/IXI_input_KNN/" + name.split('/')[-1])
     sitk.WriteTransform(final_transform, "../PreProcessedData/IXI_mask_KNN/" + os.path.splitext(name.split('/')[-1])[0] + ".tfm")
->>>>>>> origin/main:src/final_IXI_pp.py
     print("Rigid registration to MNI152 completed!")
 
 # # HD-Bet
 
 # # import os
 # # os.system("cd C:/Sean/PhD/Dataset")
-# # os.system("hd-bet -i ./trial_input -o ./trial_output_hdbet -device cpu --disable_tta")
+# # os.system("hd-bet -i ../trial_input -o ../trial_output_hdbet -device cpu --disable_tta")

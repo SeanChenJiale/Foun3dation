@@ -7,7 +7,7 @@ file = os.path.dirname(os.path.abspath(__file__))
 os.chdir(file)
 print(os.getcwd())
 
-IXI = glob.glob('../Dataset/IXI/**/*.nii.gz',recursive=True) ## change to the file of the pre-processed images
+IXI = glob.glob('../PreProcessedData/IXI/**/*.nii.gz',recursive=True) ## change to the file of the pre-processed images
 for name in IXI:
     print(name)
     
@@ -24,6 +24,8 @@ df['filepath'] = df['Formatted_IXI_ID'].apply(
     lambda x: next((path for path in IXI if x in path), None)
 )
 df = df[['AGE', 'filepath']].dropna()
+
+df = df.rename(columns={'AGE':"age"})
 
 df.to_csv("../Metadata/IXI_cleaned.csv",index=False)
 

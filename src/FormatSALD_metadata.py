@@ -27,5 +27,7 @@ df['filepath'] = df['Formatted_Sub_ID'].apply(
 )
 df = df[['Age', 'filepath']].dropna()
 
+df = df.rename(columns={'Age':"age"})
+
 df.to_csv("../Metadata/SALD_cleaned.csv",index=False)
 
