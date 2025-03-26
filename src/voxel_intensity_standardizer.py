@@ -2,15 +2,17 @@ import SimpleITK as sitk
 import os
 import glob
 import numpy as np
+import preprocessing_utils
 
 file = os.path.dirname(os.path.abspath(__file__))
 os.chdir(file)
 # print(os.getcwd())
 
-image_paths = glob.glob("../PreProcessedData/SALD/**/*.nii.gz",recursive=True)
+image_paths = glob.glob("../PreProcessedData/ICBM/**/*.nii.gz",recursive=True)
 print(len(image_paths))
 
 for image_path in image_paths:
+    filename = preprocessing_utils.filename_extract_from_path_with_ext(image_path)
     # for image_path in image_paths:
 
     curr_image = sitk.ReadImage(image_path)  
