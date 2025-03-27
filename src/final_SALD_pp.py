@@ -120,5 +120,5 @@ for name in SALD:
 # # import os
 # # os.system("cd C:/Sean/PhD/Dataset")
 
-#hd-bet -i ./sean/Monai/PreProcessedData/SALD_input -o ./sean/Monai/PreProcessedData/SALD
+#hd-bet -i ./sean/Monai/temp/SALD -o ./sean/Monai/PreProcessedData/SALD
 

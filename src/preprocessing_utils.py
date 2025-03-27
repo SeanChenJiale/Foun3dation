@@ -11,6 +11,62 @@ import pandas as pd
 from scipy.ndimage import affine_transform
 import logging
 import sys
+import subprocess
+import nibabel as nib
+import os
+import sys
+import h5py
+import numpy as np
+
+def main_preprocessing(main_datasetname, search_string = "*.nii.gz"):
+    """ returns the MNI_template, temp_file, pathlist, finished_pathlist, finished_pp, undone_paths, logger""" 
+
+    MNI_template = load_MNI_template()
+
+    pathlist = retrieve_nii_gz_paths(f'../Dataset/{main_datasetname}/**/{search_string}')
+
+    finished_pathlist = retrieve_nii_gz_paths(f'../temp/{main_datasetname}/*.nii.gz')
+
+    finished_pp= []
+
+    for path in finished_pathlist:
+        finished_pp.append(filename_extract_from_path_with_ext(path))
+
+    undone_paths = [path for path in pathlist if not any(sub in path for sub in finished_pp)]
+
+    logger = setup_logger(f"../logs/{main_datasetname}preprocess.log")
+
+    return MNI_template, pathlist, finished_pathlist, finished_pp, undone_paths, logger
+
+def convert_mnc_to_nifti(input_file, output_file=None):
+    if not input_file.endswith('.mnc'):
+        print("Error: Input file must have a '.mnc' extension.")
+        sys.exit(1)
+    if output_file is None:
+        output_file = os.path.splitext(input_file)[0] + '.nii.gz'
+    if not (output_file.endswith('.nii') or output_file.endswith('.nii.gz')):
+        print("Error: Output file must have a '.nii' or '.nii.gz' extension.")
+        sys.exit(1)
+    try:
+        img = nib.load(input_file)
+        header = img.header
+        data = img.get_fdata()
+        if data.ndim == 4:
+            with h5py.File(input_file, "r") as f:
+                # MINC2 stores dimensions under 'minc-2.0/image/0/image'
+                dimorder = f["minc-2.0/image/0/image"].attrs["dimorder"].decode()
+                if dimorder.startswith("time,"):
+                     data = np.transpose(data, (1, 2, 3, 0))
+        affine = img.affine
+        nifti_img = nib.Nifti1Image(data, affine)
+        nifti_img.header.set_qform(affine)
+        nifti_img.header.set_sform(affine)
+        nifti_img.header['cal_min'] = data.min()
+        nifti_img.header['cal_max'] = data.max()
+        nib.save(nifti_img, output_file)
+    except Exception as e:
+        print(f"Error during conversion: {e}")
+        sys.exit(1)
 
 def setup_logger(logpath):
     # Ensure the directory exists
@@ -50,6 +106,39 @@ def filename_extract_from_path_with_ext(path):
     takes an nii.gz path and outputs only the filename.nii.gz
     """
     return  path.split("/")[-1]
+
+def file_remover_from_pathlist(pathlist,remove=False):
+    """specify remove to be true to double check the files to be removed"""
+    for file in pathlist:
+        # Absolute filepath of the file to be removed
+        file_to_remove = file
+
+        try:
+            # Check if the file exists
+            if os.path.exists(file_to_remove):
+                if remove:
+                    os.remove(file_to_remove)
+                    print(f"File {file_to_remove} has been removed.")
+                else:
+                    print(f"File {file_to_remove} will be removed.")
+            else:
+                print(f"File {file_to_remove} does not exist.")
+        except Exception as e:
+            print(f"An error occurred while trying to remove the file: {e}")
+
+        print("All files have been removed.")
+def find_dicom_folders(root_dir):
+    """
+    Recursively searches for folders containing DICOM files in the given directory.
+    """
+
+    dicom_folders = []
+    
+    for dirpath, _, filenames in os.walk(root_dir):
+        if any(filename.lower().endswith(".dcm") for filename in filenames):
+            dicom_folders.append(dirpath)  # Add folder if it contains .dcm files
+
+    return dicom_folders
 
 def makedirs(path,dataset_name,makedir = True) -> list:
     """
