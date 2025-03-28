@@ -99,9 +99,9 @@ def init_scratch() -> monai.networks.nets.ResNet:
 
 # model = Regressor(in_shape=[1, 128,128,128], out_shape=1, channels=(16, 32, 64, 128, 256), strides=(2, 2, 2, 2))
 
-model = init_mednet()
+model = init_scratch()
 
-model.load_state_dict(torch.load("./medicalnet_finetune_100.pth",weights_only=True))
+model.load_state_dict(torch.load("./Models/scratch.pth",weights_only=True))
 model.to(device)
 print("successfully loaded model")
 model.eval()

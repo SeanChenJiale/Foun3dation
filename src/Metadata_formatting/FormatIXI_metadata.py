@@ -7,7 +7,7 @@ file = os.path.dirname(os.path.abspath(__file__))
 os.chdir(file)
 print(os.getcwd())
 
-IXI = glob.glob('../../PreProcessedData/IXI/**/*.nii.gz',recursive=True) ## change to the file of the pre-processed images
+IXI = glob.glob('../../PreProcessedData/IXI2/**/*T1.nii.gz',recursive=True) ## change to the file of the pre-processed images
 for name in IXI:
     print(name)
     
@@ -27,7 +27,7 @@ df = df[['AGE', 'filepath']].dropna()
 
 df = df.rename(columns={'AGE':"age"})
 
-df.to_csv("../../Metadata/IXI_cleaned.csv",index=False)
+df.to_csv("../../Metadata/IXI2_cleaned.csv",index=False)
 
 # print('\nNamed with wildcard *:')
 # IXI = glob.glob('C:/Sean/PhD/Dataset/ixi_tiny/ixi_tiny/**/*.nii.gz')

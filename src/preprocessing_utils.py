@@ -224,7 +224,7 @@ def retrieve_nii_gz_paths(search_path=None, print_len=True, recursive_bool=True)
     try:
         search_list = glob.glob(search_path, recursive=recursive_bool)
         if print_len:
-            print(f"{len(search_list)} files found.")
+            print(f"{len(search_list)} with path {search_path} files found.")
         return search_list
     except Exception as e:
         print(f"Error in loading: {e}")

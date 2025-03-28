@@ -28,7 +28,7 @@ if not os.getcwd() == "/media/backup_16TB/sean/Monai/src/training":
 pin_memory = torch.cuda.is_available()
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-df = pd.read_csv("../../Metadata/ao_ix_oa_sa.csv")
+df = pd.read_csv("../../Metadata/ix_sa.csv")
 print(len(df))
 df = df[(df["age"] < 40) & (df["age"] > 0)]
 df = df.sample(frac=1,random_state=42).reset_index(drop=True) ## random reshuffle of datarows
@@ -49,7 +49,7 @@ training_ages_list= list(ages[:train_index])
 test_ages_list= list(ages[-test_index:])
 
 # Define bins
-bins = [(15, 20), (20, 25), (25, 30), (30, 35), (35, 40)]
+bins = [(15, 40)]
 
 # Group data into bins
 binned_dfs = {b: df[(df["age"] >= b[0]) & (df["age"] < b[1])] for b in bins}

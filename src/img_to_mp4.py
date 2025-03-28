@@ -5,8 +5,8 @@ import glob
 import preprocessing_utils as preprocess
 from natsort import natsorted  # Natural sorting
 
-nii_path = "../PreProcessedData/IXI/IXI002-Guys-0828-T1.nii.gz"
-main_dataset = preprocess.dataset_extractor("../PreProcessedData/IXI/IXI002-Guys-0828-T1.nii.gz")
+nii_path = "../PreProcessedData/IXI2/IXI002-Guys-0828-T1.nii.gz"
+main_dataset = preprocess.dataset_extractor("../PreProcessedData/IXI2/IXI002-Guys-0828-T1.nii.gz")
 listdir = preprocess.makedirs(nii_path,main_dataset,makedir=False)
 # Define the input and output paths
 Ordered_list = ["","Axial", "Coronal", "Sagittal"]

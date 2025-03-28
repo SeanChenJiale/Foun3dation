@@ -22,7 +22,7 @@ os.chdir(file)
 pin_memory = torch.cuda.is_available()
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-df = pd.read_csv("../../Metadata/uniformed_dist.csv")
+df = pd.read_csv("../../Metadata/ix_sa.csv")
 print(len(df))
 df = df[(df["age"] < 40) & (df["age"] > 0)]
 df = df.sample(frac=1, random_state=42).reset_index(drop=True) ## random reshuffle of datarows
@@ -144,7 +144,7 @@ for epoch in range(max_epochs):
         if mse < lowest_mse:
             lowest_mse = mse
             lowest_mse_epoch = epoch + 1
-            torch.save(model.state_dict(), "best_metric_model_classification3d_array.pth")
+            torch.save(model.state_dict(), "./Models/scratch.pth")
             print("saved new best metric model")
 
         print(f"Current epoch: {epoch+1} current MAE: {mse:.4f} ")
@@ -160,10 +160,10 @@ print(epoch_loss_values)
 epoch_loss_df = pd.DataFrame({'epoch_loss': epoch_loss_values})
 
 # Save to CSV
-epoch_loss_df.to_csv('epoch_loss_values.csv', index=False)
+epoch_loss_df.to_csv('epoch_loss_values_scratch.csv', index=False)
 
 # Convert list to DataFrame
 val_loss_df = pd.DataFrame({'epoch_loss': val_loss_values})
 
 # Save to CSV
-val_loss_df.to_csv('val_loss_values.csv', index=False)
+val_loss_df.to_csv('val_loss_values_scratch.csv', index=False)
