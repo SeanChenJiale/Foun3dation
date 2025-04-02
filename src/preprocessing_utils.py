@@ -17,13 +17,15 @@ import os
 import sys
 import h5py
 import numpy as np
+import json
 
-def main_preprocessing(main_datasetname, search_string = "*.nii.gz"):
+def main_preprocessing(main_datasetname, search_string = "*.nii.gz",pathlist = None):
     """ returns the MNI_template, temp_file, pathlist, finished_pathlist, finished_pp, undone_paths, logger""" 
 
     MNI_template = load_MNI_template()
-
-    pathlist = retrieve_nii_gz_paths(f'../Dataset/{main_datasetname}/**/{search_string}')
+    if pathlist is None:
+        print("pathlist is not defined, finding search string's paths")
+        pathlist = retrieve_nii_gz_paths(f'../Dataset/{main_datasetname}/**/{search_string}')
 
     finished_pathlist = retrieve_nii_gz_paths(f'../temp/{main_datasetname}/*.nii.gz')
 
@@ -31,12 +33,41 @@ def main_preprocessing(main_datasetname, search_string = "*.nii.gz"):
 
     for path in finished_pathlist:
         finished_pp.append(filename_extract_from_path_with_ext(path))
+    
+    finished_pp = finished_pathlist
 
     undone_paths = [path for path in pathlist if not any(sub in path for sub in finished_pp)]
 
     logger = setup_logger(f"../logs/{main_datasetname}preprocess.log")
 
     return MNI_template, pathlist, finished_pathlist, finished_pp, undone_paths, logger
+
+
+def json_find_folders_with_3d_acquisition(base_dir):
+    nii_files_with_3d = []
+
+    # Walk through the directory structure
+    for root, dirs, files in os.walk(base_dir):
+
+        # Check each file in the directory
+        for file in files:
+            if file.endswith(".json"):  # Look for JSON files
+                json_path = os.path.join(root, file)
+                try:
+                    # Open and parse the JSON file
+                    with open(json_path, "r") as f:
+                        data = json.load(f)
+                    
+                    # Check if "MRAcquisitionType" is "3D"
+                    if data.get("MRAcquisitionType") == "3D":
+                        # Replace .json with .nii.gz to find the corresponding file
+                        nii_file = os.path.join(root, file.replace(".json", ".nii.gz"))
+                        nii_files_with_3d.append(nii_file)
+                except Exception as e:
+                    print(f"Error reading {json_path}: {e}")
+    
+    print(f"Found {len(nii_files_with_3d)} .nii.gz files with 3D acquisition type.")
+    return nii_files_with_3d
 
 def convert_mnc_to_nifti(input_file, output_file=None):
     if not input_file.endswith('.mnc'):
